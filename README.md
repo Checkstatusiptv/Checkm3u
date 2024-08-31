@@ -99,7 +99,7 @@
 <marquee behavior="alternate">━─┫ㄓ┣ᑕᕼᗴᑕᏦ ᔑᎢᗩᎢᑌᔑ ᏆᑭᎢᐯ ᗷᎩ ᗷしᗩᑕᏦᔑᕼᗴᗴᑭ┫ㄓ┣─━</marquee>
 <body>
     <div class="container">
-        <img direction="center" src="https://raw.githubusercontent.com/kingplayeer/KingPlayer/main/CHECK-STATUS-IPTV-31-08-2024%20(1).png" width="480"> 
+        <img direction="center" src="https://raw.githubusercontent.com/Checkstatusiptv/Checkm3u/main/home.png" width="480"> 
         <form class="form-inline" id="busca-container">
             <div class="input-group">
                 <input type="text" class="form-control" id="linkLista" placeholder="ᏟϴᏞᎬ Ꭺ ႮᎡᏞ Ꮇ3Ⴎ ϴႮ Ꮇ3Ⴎ8 ᏢᎪᎡᎪ ᏟᎻᎬᏟᎪᎡ." aria-label="Digite a URL" aria-describedby="basic-addon2">
