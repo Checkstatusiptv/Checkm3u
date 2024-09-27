@@ -1,15 +1,17 @@
 {
   "scripts": [
     {"name": "Script 1", "url": "https://raw.githubusercontent.com/user/repo/main/script1.py"},
-    {"name": "Script 2", "url": "https://raw.githubusercontent.com/user/repo/main/script1.py"},
+    {"name": "TROPADOBLACKSHEEP 2", "url": "https://raw.githubusercontent.com/user/repo/main/script1.py"},
     {"name": "InfoIPTV", "url": "https://raw.githubusercontent.com/Checkstatusiptv/Checkm3u/refs/heads/main/infoiptv.py"}
   ],
   "combos": [
     {"name": "Combo 1", "url": "https://raw.githubusercontent.com/user/repo/main/combo1.txt"},
-    {"name": "Combo 2", "url": "https://raw.githubusercontent.com/user/repo/main/combo2.txt"}
+    {"name": "TROPADOBLACKSHEEP 2", "url": "https://raw.githubusercontent.com/user/repo/main/combo1.txt"},
+    {"name": "Combo 3", "url": "https://raw.githubusercontent.com/user/repo/main/combo2.txt"}
   ],
   "addons": [
     {"name": "Addon 1", "url": "https://raw.githubusercontent.com/user/repo/main/addon1.zip"},
-    {"name": "Addon 2", "url": "https://raw.githubusercontent.com/user/repo/main/addon2.zip"}
+    {"name": "TROPADOBLACKSHEEP 2", "url": "https://raw.githubusercontent.com/user/repo/main/addon1.zip"},
+    {"name": "Addon 3", "url": "https://raw.githubusercontent.com/user/repo/main/addon2.zip"}
   ]
 }
