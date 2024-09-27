@@ -1,0 +1,14 @@
+{
+  "scripts": [
+    {"name": "Script 1", "url": "https://raw.githubusercontent.com/user/repo/main/script1.py"},
+    {"name": "InfoIPTV", "url": "https://raw.githubusercontent.com/user/repo/main/infoiptv.py"}
+  ],
+  "combos": [
+    {"name": "Combo 1", "url": "https://raw.githubusercontent.com/user/repo/main/combo1.txt"},
+    {"name": "Combo 2", "url": "https://raw.githubusercontent.com/user/repo/main/combo2.txt"}
+  ],
+  "addons": [
+    {"name": "Addon 1", "url": "https://raw.githubusercontent.com/user/repo/main/addon1.zip"},
+    {"name": "Addon 2", "url": "https://raw.githubusercontent.com/user/repo/main/addon2.zip"}
+  ]
+}
