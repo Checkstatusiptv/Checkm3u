@@ -1,6 +1,28 @@
 {
-    "menu_json": "aHR0cHM6Ly9yYXcud2ViZGFzaGJhdC5jb20vQ2hlY2tzdGF0dGlwdC9DaGVja21pMy9yZWZzL2hlYWRzL21haW4vTWVudS5qc29u",
-    "imagem_tropa": "aHR0cHM6Ly9yYXcud2ViZGFzaGJhdC5jb20vQ2hlY2tzdGF0dGlwdC9DaGVja21pMy9ycmVmcy9oZWFkcy9tYWluL3Ryb3BhZG9iYWNrdC5qcGc=",
-    "imagem_assinatura": "aHR0cHM6Ly9yYXcuZ2l0aHViLmNvbS9DaGVja3N0YXR1c2lwdHYvQ2hlY2ttMy9yZWZzL2hlYWRzL21haW4vTURBIDExNDkzNC5wbmc=",
-    "url_github": "aHR0cHM6Ly9yYXcud2ViZGFzaGJhdC5jb20vQ2hlY2tzdGF0dGlwdC9DaGVja21pMy9ycmVmcy9oZWFkcy9tYWluL3Ryb3BhZG9iYWNrdC5qcGc="
+  "imagens": {
+    "tropa_background": "aHR0cHM6Ly9yYXcuZ2l0aHViLmNvbS9DaGVja3N0YXR1c2lwdHYvbWFpbi90cm9wYWRvYmFjay5qcGc=",
+    "assinatura": "aHR0cHM6Ly9yYXcuZ2l0aHViLmNvbS9DaGVja3N0YXR1c2lwdHYvbWFpbi9NREEgMTE0OTM0LnBuZw=="
+  },
+  "scripts": [
+    {
+      "name": "Script 1",
+      "url": "aHR0cHM6Ly9yYXcuZ2l0aHViLmNvbS9DaGVja3N0YXR1c2lwdHYvbWFpbi9zY3JpcHQxLnB5"
+    },
+    {
+      "name": "Script 2",
+      "url": "aHR0cHM6Ly9yYXcuZ2l0aHViLmNvbS9DaGVja3N0YXR1c2lwdHYvbWFpbi9zY3JpcHQyLnB5"
+    }
+  ],
+  "combos": [
+    {
+      "name": "Combo 1",
+      "url": "aHR0cHM6Ly9yYXcuZ2l0aHViLmNvbS9DaGVja3N0YXR1c2lwdHYvbWFpbi9jb21ibzEuemlw"
+    }
+  ],
+  "addons": [
+    {
+      "name": "Addon 1",
+      "url": "aHR0cHM6Ly9yYXcuZ2l0aHViLmNvbS9DaGVja3N0YXR1c2lwdHYvbWFpbi9hZGRvMS56aXA="
+    }
+  ]
 }
