@@ -39,8 +39,8 @@ class TelaTerminal(Screen):
 class TelaChecker(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.versao_local = "1.0.0"  # Defina sua versão local
-        self.url_menu_json = 'URL_DO_SEU_JSON'  # URL do JSON com a versão
+        self.versao_local = "1.1.0"  # Defina sua versão local
+        self.url_menu_json = 'https://raw.githubusercontent.com/Checkstatusiptv/Checkm3u/refs/heads/main/version.json'  # URL do JSON com a versão
         self.layout = BoxLayout(orientation='vertical', padding=10)
 
         # Label para mostrar a versão do script
@@ -123,7 +123,7 @@ class TelaChecker(Screen):
             resposta = requests.get(url)
             resposta.raise_for_status()
 
-            with open('seuscript.py', 'wb') as f:
+            with open('TROPADOBLACKSHEEP.py', 'wb') as f:
                 f.write(resposta.content)
 
             self.atualizar_status('Script atualizado. Reiniciando...')
