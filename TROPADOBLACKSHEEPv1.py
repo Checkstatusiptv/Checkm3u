@@ -145,18 +145,22 @@ class TelaChecker(Screen):
         self.popup.dismiss()
 
     def baixar_script(self, url):
-        self.atualizar_status('Baixando script atualizado...')
-        try:
-            resposta = requests.get(url)
-            resposta.raise_for_status()
+    self.atualizar_status('Baixando script atualizado...')
+    try:
+        resposta = requests.get(url)
+        resposta.raise_for_status()
 
-            with open(os.path.join(self.pasta_download, 'script_atualizado.py'), 'wb') as f:
-                f.write(resposta.content)
+        # Extrai o nome do arquivo da URL
+        nome_arquivo = url.split('/')[-1]
+        caminho_arquivo = os.path.join(self.pasta_download, nome_arquivo)
 
-            self.atualizar_status('Script atualizado. Reiniciando...')
-            os.execv(sys.executable, ['python'] + sys.argv)  # Reinicia o aplicativo
-        except Exception as e:
-            self.atualizar_status(f'Erro ao baixar o script: {str(e)}')
+        with open(caminho_arquivo, 'wb') as f:
+            f.write(resposta.content)
+
+        self.atualizar_status('Script atualizado. Reiniciando...')
+        os.execv(sys.executable, ['python'] + sys.argv)  # Reinicia o aplicativo
+    except Exception as e:
+        self.atualizar_status(f'Erro ao baixar o script: {str(e)}')
 
     def carregar_dados_github(self):
         url = 'https://raw.githubusercontent.com/Checkstatusiptv/Checkm3u/refs/heads/main/Menu.json'
