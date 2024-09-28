@@ -36,7 +36,7 @@ class TelaTerminal(Screen):
 class TelaChecker(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.versao_local = "BETAv1.2.0"  # Nome da versão pode ser alterado conforme necessário
+        self.versao_local = "v1.2.0"  # Nome da versão pode ser alterado conforme necessário
         self.url_menu_json = 'https://raw.githubusercontent.com/Checkstatusiptv/Checkm3u/refs/heads/main/version.json'
         self.layout = BoxLayout(orientation='vertical', padding=10)
 
