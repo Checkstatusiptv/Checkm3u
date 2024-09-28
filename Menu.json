@@ -2,16 +2,22 @@
   "scripts": [
     {"name": "Script 1", "url": "https://raw.githubusercontent.com/user/repo/main/script1.py"},
     {"name": "TROPADOBLACKSHEEP 2", "url": "https://raw.githubusercontent.com/user/repo/main/script1.py"},
-    {"name": "InfoIPTV", "url": "https://raw.githubusercontent.com/Checkstatusiptv/Checkm3u/refs/heads/main/infoiptv.py"}
+    {"name": "InfoIPTV", "url": "https://raw.githubusercontent.com/Checkstatusiptv/Checkm3u/refs/heads/main/infoiptv.py"},
+    {"name": "Script 4", "url": "https://raw.githubusercontent.com/user/repo/main/script4.py"},
+    {"name": "Script 5", "url": "https://raw.githubusercontent.com/user/repo/main/script5.py"}
   ],
   "combos": [
     {"name": "Combo 1", "url": "https://raw.githubusercontent.com/user/repo/main/combo1.txt"},
     {"name": "TROPADOBLACKSHEEP 2", "url": "https://raw.githubusercontent.com/user/repo/main/combo1.txt"},
-    {"name": "Combo 3", "url": "https://raw.githubusercontent.com/user/repo/main/combo2.txt"}
+    {"name": "Combo 3", "url": "https://raw.githubusercontent.com/user/repo/main/combo2.txt"},
+    {"name": "Combo 4", "url": "https://raw.githubusercontent.com/user/repo/main/combo4.txt"},
+    {"name": "Combo 5", "url": "https://raw.githubusercontent.com/user/repo/main/combo5.txt"}
   ],
   "addons": [
     {"name": "Addon 1", "url": "https://raw.githubusercontent.com/user/repo/main/addon1.zip"},
     {"name": "TROPADOBLACKSHEEP 2", "url": "https://github.com/Checkstatusiptv/Checkm3u/blob/main/repo.dragon.zip"},
-    {"name": "Addon 3", "url": "https://raw.githubusercontent.com/user/repo/main/addon2.zip"}
+    {"name": "Addon 3", "url": "https://raw.githubusercontent.com/user/repo/main/addon2.zip"},
+    {"name": "Addon 4", "url": "https://raw.githubusercontent.com/user/repo/main/addon4.zip"},
+    {"name": "Addon 5", "url": "https://raw.githubusercontent.com/user/repo/main/addon5.zip"}
   ]
 }
