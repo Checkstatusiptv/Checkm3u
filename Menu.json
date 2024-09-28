@@ -11,7 +11,7 @@
   ],
   "addons": [
     {"name": "Addon 1", "url": "https://raw.githubusercontent.com/user/repo/main/addon1.zip"},
-    {"name": "TROPADOBLACKSHEEP 2", "url": "https://raw.githubusercontent.com/user/repo/main/addon1.zip"},
+    {"name": "TROPADOBLACKSHEEP 2", "url": "https://github.com/Checkstatusiptv/Checkm3u/blob/main/repo.dragon.zip"},
     {"name": "Addon 3", "url": "https://raw.githubusercontent.com/user/repo/main/addon2.zip"}
   ]
 }
