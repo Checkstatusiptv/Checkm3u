@@ -67,7 +67,7 @@ class TelaChecker(Screen):
         self.label_status = Label(text='Pronto... O usuário pode baixar diferentes arquivos tais como (scripts, combos, add-ons)', size_hint=(1, None), height=30, color=(1, 1, 1, 1))
         self.layout.add_widget(self.label_status)
 
-        self.label_versao = Label(text=f"SCRIPT VERSÃO: {self.versao_local}", size_hint=(1, None), height=30, color=(0, 1, 0, 1))
+        self.label_versao = Label(text=f"SCRIPT: {self.versao_local}", size_hint=(1, None), height=30, color=(0, 1, 0, 1))
         self.layout.add_widget(self.label_versao)
 
         self.add_widget(self.layout)
