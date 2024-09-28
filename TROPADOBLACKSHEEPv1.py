@@ -18,6 +18,7 @@ from kivy.uix.scrollview import ScrollView
 from kivy.uix.textinput import TextInput
 from kivy.core.image import Image as CoreImage
 from kivy.utils import platform
+from kivy.graphics import Color, RoundedRectangle
 
 # Configuração básica de logging
 logging.basicConfig(level=logging.INFO)
@@ -26,10 +27,8 @@ class TelaTerminal(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.layout = BoxLayout(orientation='vertical', padding=10)
-        
-        self.terminal = TextInput(size_hint=(1, 0.9), readonly=True, multiline=True)
+        self.terminal = TextInput(size_hint=(1, None), height=300, readonly=True, multiline=True)
         self.layout.add_widget(self.terminal)
-        
         self.add_widget(self.layout)
 
     def atualizar_terminal(self, mensagem):
@@ -39,23 +38,26 @@ class TelaTerminal(Screen):
 class TelaChecker(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.versao_local = "BETA"  # Defina sua versão local
-        self.url_menu_json = 'https://raw.githubusercontent.com/Checkstatusiptv/Checkm3u/refs/heads/main/version.json'  # URL do JSON com a versão
+        self.versao_local = "BETAv1.2"  # Nome da versão pode ser alterado conforme necessário
+        self.url_menu_json = 'https://raw.githubusercontent.com/Checkstatusiptv/Checkm3u/refs/heads/main/version.json'
         self.layout = BoxLayout(orientation='vertical', padding=10)
 
-        # Label para mostrar a versão do script
-        self.label_versao = Label(text=f"SCRIPT VERSÃO: {self.versao_local}", size_hint=(1, None), height=40)
-        self.layout.add_widget(self.label_versao)
+        with self.layout.canvas.before:
+            Color(0, 0, 0, 1)  # Cor de fundo preto
+            self.rect = RoundedRectangle(size=self.layout.size, pos=self.layout.pos, radius=[10])
 
-        self.criar_pasta_download()
-        self.imagem = self.baixar_e_exibir_imagem('https://raw.githubusercontent.com/Checkstatusiptv/Checkm3u/refs/heads/main/tropadoback.jpg')
-        self.imagem.allow_stretch = True
-        self.imagem.size_hint_y = 0.6
-        self.layout.add_widget(self.imagem)
+        self.bind(size=self._update_rect, pos=self._update_rect)
 
         self.label_funcionalidade = Label(text="", size_hint=(1, None), height=110)
         self.label_funcionalidade.bind(size=self.label_funcionalidade.setter('text_size'))
         self.layout.add_widget(self.label_funcionalidade)
+
+        self.criar_pasta_download()
+
+        self.imagem = self.baixar_e_exibir_imagem('https://raw.githubusercontent.com/Checkstatusiptv/Checkm3u/refs/heads/main/scriptbyblacksheep.png')
+        self.imagem.allow_stretch = True
+        self.imagem.size_hint_y = 0.3
+        self.layout.add_widget(self.imagem)
 
         button_spinner_layout = BoxLayout(size_hint=(1, None), height=80)
         self.adicionar_botoes(button_spinner_layout)
@@ -64,18 +66,18 @@ class TelaChecker(Screen):
         self.barra_progresso = ProgressBar(max=100, size_hint=(1, None), height=50)
         self.layout.add_widget(self.barra_progresso)
 
-        self.label_status = Label(text='Pronto... O usuário pode baixar diferentes arquivos tais como (scripts, combos, add-ons)', size_hint=(1, None), height=1500)
+        self.label_status = Label(text='Pronto... O usuário pode baixar diferentes arquivos tais como (scripts, combos, add-ons)', size_hint=(1, None), height=30, color=(1, 1, 1, 1))
         self.layout.add_widget(self.label_status)
 
-        self.imagem_assinatura = self.baixar_e_exibir_imagem('https://raw.githubusercontent.com/Checkstatusiptv/Checkm3u/refs/heads/main/TROPA-DO-BLACKSHEEP-N-VIDA-27-09-2024.png')
-        self.imagem_assinatura.allow_stretch = True
-        self.imagem_assinatura.size_hint_y = 0.2
-        self.layout.add_widget(self.imagem_assinatura)
+        self.label_versao = Label(text=f"SCRIPT VERSÃO: {self.versao_local}", size_hint=(1, None), height=30, color=(0, 1, 0, 1))
+        self.layout.add_widget(self.label_versao)
 
         self.add_widget(self.layout)
-
-        # Verifica atualização no início
         self.verificar_atualizacao()
+
+    def _update_rect(self, *args):
+        self.rect.pos = self.layout.pos
+        self.rect.size = self.layout.size
 
     def criar_pasta_download(self):
         self.pasta_download = os.path.join('/storage/emulated/0', 'TROPADOBLACKSHEEP') if platform == 'android' else os.path.join(os.path.expanduser("~"), "TROPADOBLACKSHEEP")
@@ -86,20 +88,27 @@ class TelaChecker(Screen):
             resposta = requests.get(url)
             resposta.raise_for_status()
             img_data = BytesIO(resposta.content)
-            textura = CoreImage(img_data, ext='jpg').texture
-            return Image(texture=textura)
+            textura = CoreImage(img_data, ext='png').texture
+            imagem = Image(texture=textura)
+            imagem.allow_stretch = True
+            return imagem
         except Exception as e:
             logging.error(f"Erro ao baixar a imagem: {str(e)}")
-            return Label(text="Imagem não disponível. Tente mais tarde.")
+            return Label(text="Imagem não disponível. Tente mais tarde.", color=(1, 1, 1, 1))
 
     def adicionar_botoes(self, layout):
-        retro_background_color = (0.5, 0.2, 0.8, 1)
+        retro_background_color = (0, 0, 1, 1)
         text_color = (1, 1, 1, 1)
 
-        for texto, metodo in [('SCRIPTS', self.mostrar_popup_scripts),
-                              ('COMBOS', self.mostrar_popup_comb),
-                              ('ADD-ONS', self.mostrar_popup_kodi),
-                              ('CONTATO', self.abrir_contato)]:
+        # Mapeia os botões às suas respectivas funções
+        botoes = [
+            ('SCRIPTS', self.mostrar_popup_scripts),
+            ('COMBOS', self.mostrar_popup_comb),
+            ('ADD-ONS', self.mostrar_popup_kodi),
+            ('CONTATO', self.abrir_contato)  # Método a ser definido
+        ]
+
+        for texto, metodo in botoes:
             button = Button(text=texto, size_hint=(0.95, 1), on_press=metodo,
                             background_color=retro_background_color, color=text_color, font_size=18)
             layout.add_widget(button)
@@ -111,11 +120,29 @@ class TelaChecker(Screen):
             dados = resposta.json()
 
             if dados['version'] != self.versao_local:
-                self.baixar_script(dados['script_url'])
+                self.mostrar_popup_nova_versao(dados['version'], dados['script_url'])
             else:
                 self.atualizar_status('O script já está atualizado.')
         except Exception as e:
             logging.error(f"Erro ao verificar atualização: {str(e)}")
+
+    def mostrar_popup_nova_versao(self, nova_versao, script_url):
+        content = BoxLayout(orientation='vertical', padding=10)
+        content.add_widget(Label(text=f'Uma nova versão ({nova_versao}) está disponível!', size_hint_y=None, height=40))
+        
+        btn_atualizar = Button(text='Atualizar Agora', size_hint_y=None, height=50)
+        btn_atualizar.bind(on_press=lambda x: self.baixar_script(script_url))
+        content.add_widget(btn_atualizar)
+
+        close_btn = Button(text='Fechar', size_hint_y=None, height=50)
+        close_btn.bind(on_press=self.fechar_popup)
+        content.add_widget(close_btn)
+
+        self.popup = Popup(title='Atualização Disponível', content=content, size_hint=(0.9, 0.4))
+        self.popup.open()
+
+    def fechar_popup(self, instance):
+        self.popup.dismiss()
 
     def baixar_script(self, url):
         self.atualizar_status('Baixando script atualizado...')
@@ -123,7 +150,7 @@ class TelaChecker(Screen):
             resposta = requests.get(url)
             resposta.raise_for_status()
 
-            with open('TROPADOBLACKSHEEPv1.py', 'wb') as f:
+            with open(os.path.join(self.pasta_download, 'script_atualizado.py'), 'wb') as f:
                 f.write(resposta.content)
 
             self.atualizar_status('Script atualizado. Reiniciando...')
@@ -145,20 +172,25 @@ class TelaChecker(Screen):
     def mostrar_popup_scripts(self, instance):
         dados = self.carregar_dados_github()
         if dados:
-            self.mostrar_popup_download("SCRIPTS", dados['scripts'])
+            self.mostrar_popup_download("SCRIPTS", dados['scripts'], "Scripts usados para executar em Python")
 
     def mostrar_popup_comb(self, instance):
         dados = self.carregar_dados_github()
         if dados:
-            self.mostrar_popup_download("COMBOS", dados['combos'])
+            self.mostrar_popup_download("COMBOS", dados['combos'], "Combos usados para executar em Python")
 
     def mostrar_popup_kodi(self, instance):
         dados = self.carregar_dados_github()
         if dados:
-            self.mostrar_popup_download("ADD-ONS", dados['addons'])
+            self.mostrar_popup_download("ADD-ONS", dados['addons'], "Add-ons usados para executar em Python")
 
-    def mostrar_popup_download(self, title, options):
+    def mostrar_popup_download(self, title, options, info_text):
         content = BoxLayout(orientation='vertical', padding=10, spacing=10)
+
+        # Adiciona um Label com o texto desejado
+        info_label = Label(text=info_text, size_hint_y=None, height=40, color=(1, 1, 1, 1))
+        content.add_widget(info_label)
+
         self.progress_bar = ProgressBar(max=100, size_hint_y=None, height=50)
         content.add_widget(self.progress_bar)
 
@@ -174,94 +206,64 @@ class TelaChecker(Screen):
         scroll_view.add_widget(button_layout)
         content.add_widget(scroll_view)
 
-        close_btn = Button(text='Fechar', size_hint_y=None, height=60)
+        close_btn = Button(text='Fechar', size_hint_y=None, height=50)
         close_btn.bind(on_press=self.fechar_popup)
         content.add_widget(close_btn)
 
-        self.script_popup = Popup(title=title, content=content, size_hint=(0.8, 0.5), auto_dismiss=False)
-        self.script_popup.open()
+        self.popup = Popup(title=title, content=content, size_hint=(0.9, 0.9))
+        self.popup.open()
 
     def iniciar_download(self, url):
-        self.label_status.text = 'Baixando...'
-        self.barra_progresso.value = 0
-        self.desabilitar_botoes(True)
         threading.Thread(target=self.download_file, args=(url,)).start()
 
-    def download_file(self, url, retries=3):
-        for attempt in range(retries):
-            try:
-                response = requests.get(url, stream=True)
-                response.raise_for_status()
-                total_length = response.headers.get('content-length')
+    def download_file(self, url):
+        try:
+            self.atualizar_status('Baixando arquivo...')
+            resposta = requests.get(url, stream=True)
+            resposta.raise_for_status()
 
-                if total_length is None:
-                    Clock.schedule_once(lambda dt: self.finalizar_download(url))
-                    return
+            total = int(resposta.headers.get('content-length', 0))
+            downloaded = 0
 
-                total_length = int(total_length)
-                downloaded = 0
-                filename = os.path.join(self.pasta_download, url.split("/")[-1])
+            with open(os.path.join(self.pasta_download, url.split('/')[-1]), 'wb') as f:
+                for data in resposta.iter_content(chunk_size=1024):
+                    downloaded += len(data)
+                    f.write(data)
+                    self.atualizar_progresso_barra(downloaded, total)
 
-                with open(filename, 'wb') as f:
-                    for data in response.iter_content(chunk_size=100):
-                        if data:
-                            f.write(data)
-                            downloaded += len(data)
-                            progress = (downloaded / total_length) * 100
-                            Clock.schedule_once(lambda dt, p=progress: setattr(self.barra_progresso, 'value', p))
+            self.atualizar_status('Download concluído!')
+        except Exception as e:
+            logging.error(f"Erro ao baixar o arquivo: {str(e)}")
+            self.atualizar_status(f'Erro: {str(e)}')
 
-                Clock.schedule_once(lambda dt: self.finalizar_download(filename))
-                break  # Exit loop on successful download
-            except requests.ConnectionError:
-                if attempt < retries - 1:
-                    self.atualizar_status('Conexão falhou, tentando novamente...')
-                else:
-                    self.atualizar_status('Erro: Falha na conexão.')
-            except requests.Timeout:
-                if attempt < retries - 1:
-                    self.atualizar_status('Tempo de conexão excedido, tentando novamente...')
-                else:
-                    self.atualizar_status('Erro: Tempo de conexão excedido.')
-            except Exception as e:
-                self.atualizar_status(f'Erro: {str(e)}')
-                break  # Exit loop on other exceptions
-            finally:
-                Clock.schedule_once(lambda dt: self.enable_buttons())
+    def atualizar_progresso_barra(self, progresso, total):
+        if total > 0:
+            porcentagem = (progresso / total) * 100
+            # Atualiza a barra de progresso
+            Clock.schedule_once(lambda dt: self.atualizar_barra(porcentagem))
 
-    def desabilitar_botoes(self, desabilitar):
-        for child in self.layout.children:
-            if isinstance(child, Button):
-                child.disabled = desabilitar
+    def atualizar_barra(self, porcentagem):
+        self.barra_progresso.value = porcentagem
 
-    def enable_buttons(self):
-        self.desabilitar_botoes(False)
-
-    def atualizar_status(self, message):
-        self.label_status.text = message
-
-    def finalizar_download(self, filename):
-        self.label_status.text = f'{filename} concluído!'
-        self.barra_progresso.value = 100
-        self.atualizar_terminal(f'Arquivo baixado: {filename}')  # Atualiza o terminal
-
-    def atualizar_terminal(self, mensagem):
-        terminal_screen = self.manager.get_screen('terminal')
-        terminal_screen.atualizar_terminal(mensagem)
-
-    def abrir_contato(self, instance):
-        webbrowser.open('https://t.me/BLACKSHEEP_B')
+    def atualizar_status(self, mensagem):
+        self.label_status.text = mensagem
 
     def fechar_popup(self, instance):
-        if hasattr(self, 'script_popup') and self.script_popup:
-            self.script_popup.dismiss()
-            self.script_popup = None
+        self.popup.dismiss()
+
+    def abrir_contato(self, instance):
+        # Lógica para abrir o contato ou um link, se necessário
+        webbrowser.open("https://t.me/BLACKSHEEP_B")  # Exemplo de URL
+
+class GerenciadorTela(ScreenManager):
+    pass
 
 class MeuApp(App):
     def build(self):
-        sm = ScreenManager(transition=NoTransition())
-        sm.add_widget(TelaChecker(name='checker'))
-        sm.add_widget(TelaTerminal(name='terminal'))  # Adiciona a tela de terminal
-        return sm
+        gerenciador = GerenciadorTela(transition=NoTransition())
+        gerenciador.add_widget(TelaChecker(name='checker'))
+        gerenciador.add_widget(TelaTerminal(name='terminal'))
+        return gerenciador
 
 if __name__ == '__main__':
     MeuApp().run()
