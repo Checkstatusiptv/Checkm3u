@@ -1,7 +1,6 @@
 import os
 import logging
 import requests
-import webbrowser
 import sys
 from io import BytesIO
 from kivy.app import App
@@ -25,8 +24,10 @@ class TelaTerminal(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.layout = BoxLayout(orientation='vertical', padding=10)
-        self.terminal = TextInput(size_hint=(1, None), height=300, readonly=True, multiline=True)
+        self.terminal = TextInput(size_hint=(1, 0.7), readonly=True, multiline=True)
         self.layout.add_widget(self.terminal)
+        self.outro_widget = Button(text="Outro widget", size_hint=(1, 0.3))
+        self.layout.add_widget(self.outro_widget)
         self.add_widget(self.layout)
 
     def atualizar_terminal(self, mensagem):
@@ -36,23 +37,21 @@ class TelaTerminal(Screen):
 class TelaChecker(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.versao_local = "v1.2.0"  # Nome da versão pode ser alterado conforme necessário
-        self.url_menu_json = 'https://raw.githubusercontent.com/Checkstatusiptv/Checkm3u/refs/heads/main/version.json'
+        self.versao_local = "v1.2.0"
+        self.url_menu_json = 'https://raw.githubusercontent.com/Checkstatusiptv/Checkm3u/main/version.json'
         self.layout = BoxLayout(orientation='vertical', padding=10)
 
         with self.layout.canvas.before:
-            Color(0, 0, 0, 1)  # Cor de fundo preto
+            Color(0, 0, 0, 1)
             self.rect = RoundedRectangle(size=self.layout.size, pos=self.layout.pos, radius=[10])
 
         self.bind(size=self._update_rect, pos=self._update_rect)
-
         self.label_funcionalidade = Label(text="", size_hint=(1, None), height=110)
         self.label_funcionalidade.bind(size=self.label_funcionalidade.setter('text_size'))
         self.layout.add_widget(self.label_funcionalidade)
 
         self.criar_pasta_download()
-
-        self.imagem = self.baixar_e_exibir_imagem('https://raw.githubusercontent.com/Checkstatusiptv/Checkm3u/refs/heads/main/scriptbyblacksheep.png')
+        self.imagem = self.baixar_e_exibir_imagem('https://raw.githubusercontent.com/Checkstatusiptv/Checkm3u/main/scriptbyblacksheep.png')
         self.imagem.allow_stretch = True
         self.imagem.size_hint_y = 0.3
         self.layout.add_widget(self.imagem)
@@ -64,13 +63,15 @@ class TelaChecker(Screen):
         self.barra_progresso = ProgressBar(max=100, size_hint=(1, None), height=50)
         self.layout.add_widget(self.barra_progresso)
 
-        self.label_status = Label(text='Pronto... O usuário pode baixar diferentes arquivos tais como (scripts, combos, add-ons)', size_hint=(1, None), height=30, color=(1, 1, 1, 1))
+        self.label_status = Label(text='Pronto... O usuário pode baixar diferentes arquivos tais como (scripts, combos, add-ons)', size_hint=(1, None), height=1400, color=(1, 1, 1, 1))
         self.layout.add_widget(self.label_status)
 
         self.label_versao = Label(text=f"SCRIPT: {self.versao_local}", size_hint=(1, None), height=30, color=(0, 1, 0, 1))
         self.layout.add_widget(self.label_versao)
 
         self.add_widget(self.layout)
+        self.popup_download = None
+        self.popup = None  # Inicializa a variável popup
         self.verificar_atualizacao()
 
     def _update_rect(self, *args):
@@ -95,15 +96,14 @@ class TelaChecker(Screen):
             return Label(text="Imagem não disponível. Tente mais tarde.", color=(1, 1, 1, 1))
 
     def adicionar_botoes(self, layout):
-        retro_background_color = (1, 0.5, 0, 1)  # Cor laranja para os botões
+        retro_background_color = (1, 0, 0, 1)
         text_color = (1, 1, 1, 1)
 
-        # Mapeia os botões às suas respectivas funções
         botoes = [
             ('SCRIPTS', self.mostrar_popup_scripts),
             ('COMBOS', self.mostrar_popup_comb),
             ('ADD-ONS', self.mostrar_popup_kodi),
-            ('CONTATO', self.abrir_contato)  # Método definido abaixo
+            ('TELEGRAM', self.mostrar_popup_telegram)  # Botão TELEGRAM
         ]
 
         for texto, metodo in botoes:
@@ -124,8 +124,16 @@ class TelaChecker(Screen):
         except Exception as e:
             logging.error(f"Erro ao verificar atualização: {str(e)}")
 
+    def atualizar_status(self, mensagem):
+        self.label_status.text = mensagem
+        logging.info(mensagem)
+
     def mostrar_popup_nova_versao(self, nova_versao, script_url):
         content = BoxLayout(orientation='vertical', padding=10)
+
+        imagem = self.baixar_e_exibir_imagem('https://raw.githubusercontent.com/Checkstatusiptv/Checkm3u/refs/heads/main/atualizacao.png')
+        content.add_widget(imagem)
+
         content.add_widget(Label(text=f'Uma nova versão ({nova_versao}) está disponível!', size_hint_y=None, height=40))
         
         btn_atualizar = Button(text='Atualizar Agora', size_hint_y=None, height=50)
@@ -136,11 +144,17 @@ class TelaChecker(Screen):
         close_btn.bind(on_press=self.fechar_popup)
         content.add_widget(close_btn)
 
-        self.popup = Popup(title='Atualização Disponível', content=content, size_hint=(0.9, 0.4))
+        self.popup = Popup(title='Atualização Disponível', content=content, size_hint=(0.7, 0.3))
         self.popup.open()
 
     def fechar_popup(self, instance):
-        self.popup.dismiss()
+        if self.popup:
+            self.popup.dismiss()
+            self.popup = None
+
+        if self.popup_download:
+            self.popup_download.dismiss()
+            self.popup_download = None
 
     def baixar_script(self, url):
         self.atualizar_status('Baixando script atualizado...')
@@ -148,100 +162,119 @@ class TelaChecker(Screen):
             resposta = requests.get(url)
             resposta.raise_for_status()
 
-            # Extrai o nome do arquivo da URL
-            nome_arquivo = url.split('/')[-1]
+            nome_arquivo = os.path.basename(url)
             caminho_arquivo = os.path.join(self.pasta_download, nome_arquivo)
 
             with open(caminho_arquivo, 'wb') as f:
                 f.write(resposta.content)
 
             self.atualizar_status('Script atualizado. Reiniciando...')
-            os.execv(sys.executable, ['python'] + sys.argv)  # Reinicia o aplicativo
+            os.execv(sys.executable, ['python'] + sys.argv)
         except Exception as e:
             self.atualizar_status(f'Erro ao baixar o script: {str(e)}')
 
     def carregar_dados_github(self):
-        url = 'https://raw.githubusercontent.com/Checkstatusiptv/Checkm3u/refs/heads/main/Menu.json'
+        url = 'https://raw.githubusercontent.com/Checkstatusiptv/Checkm3u/main/Menu.json'
         try:
             resposta = requests.get(url)
             resposta.raise_for_status()
             dados = resposta.json()
             return dados
         except Exception as e:
-            logging.error(f"Erro ao carregar dados do GitHub: {str(e)}")
+            logging.error(f"Erro ao carregar dados: {str(e)}")
             return None
 
     def mostrar_popup_scripts(self, instance):
         dados = self.carregar_dados_github()
         if dados:
+            if not dados.get('scripts'):
+                self.atualizar_status("Nenhum script disponível para download.")
+                return
             self.mostrar_popup_download("SCRIPTS", dados['scripts'], "Scripts usados para executar em Python")
 
     def mostrar_popup_comb(self, instance):
         dados = self.carregar_dados_github()
         if dados:
-            self.mostrar_popup_download("COMBOS", dados['combos'], "Combos usados para executar em Python")
+            if not dados.get('combos'):
+                self.atualizar_status("Nenhum combo disponível para download.")
+                return
+            self.mostrar_popup_download("COMBOS", dados['combos'], "Combos disponíveis para download")
 
     def mostrar_popup_kodi(self, instance):
         dados = self.carregar_dados_github()
         if dados:
-            self.mostrar_popup_download("ADD-ONS", dados['addons'], "Add-ons usados para executar em Python")
+            if not dados.get('addons'):
+                self.atualizar_status("Nenhum add-on disponível para download.")
+                return
+            self.mostrar_popup_download("ADD-ONS", dados['addons'], "Add-ons disponíveis para download")
 
-    def mostrar_popup_download(self, title, options, info_text):
-        content = BoxLayout(orientation='vertical', padding=10, spacing=10)
+    def mostrar_popup_download(self, titulo, lista_downloads, descricao):
+        layout = BoxLayout(orientation='vertical', padding=10)
+        layout.add_widget(Label(text=descricao, size_hint_y=None, height=40))
 
-        # Adiciona um Label com o texto desejado
-        info_label = Label(text=info_text, size_hint_y=None, height=40, color=(1, 1, 1, 1))
-        content.add_widget(info_label)
+        scroll_view = ScrollView(size_hint=(1, None), size=(400, 300))
+        scroll_view.do_scroll_x = False
 
-        self.progress_bar = ProgressBar(max=100, size_hint_y=None, height=50)
-        content.add_widget(self.progress_bar)
+        box_layout = BoxLayout(orientation='vertical', size_hint_y=None)
+        box_layout.bind(minimum_height=box_layout.setter('height'))
 
-        for option in options:
-            button = Button(text=option, size_hint=(1, None), height=40)
-            button.bind(on_press=lambda instance, url=options[option]: self.baixar_arquivo(url))
-            content.add_widget(button)
+        for item in lista_downloads:
+            button = Button(text=item['name'], size_hint_y=None, height=40)
+            button.bind(on_press=lambda btn, url=item['url']: self.baixar_item(url))
+            box_layout.add_widget(button)
 
-        close_btn = Button(text='Fechar', size_hint_y=None, height=50)
-        close_btn.bind(on_press=self.fechar_popup)
-        content.add_widget(close_btn)
+        scroll_view.add_widget(box_layout)
+        layout.add_widget(scroll_view)
 
-        self.popup = Popup(title=title, content=content, size_hint=(0.9, 0.6))
-        self.popup.open()
+        close_button = Button(text='Fechar', size_hint_y=None, height=50)
+        close_button.bind(on_press=self.fechar_popup)
+        layout.add_widget(close_button)
 
-    def baixar_arquivo(self, url):
-        self.atualizar_status(f'Baixando {url}...')
+        self.popup_download = Popup(title=titulo, content=layout, size_hint=(0.7, 0.7))
+        self.popup_download.open()
+
+    def baixar_item(self, url):
+        self.atualizar_status('Baixando item...')
         try:
             resposta = requests.get(url)
             resposta.raise_for_status()
 
-            # Extrai o nome do arquivo da URL
-            nome_arquivo = url.split('/')[-1]
+            nome_arquivo = os.path.basename(url)
             caminho_arquivo = os.path.join(self.pasta_download, nome_arquivo)
 
             with open(caminho_arquivo, 'wb') as f:
                 f.write(resposta.content)
 
-            self.atualizar_status(f'{nome_arquivo} baixado com sucesso!')
+            self.atualizar_status(f'Item {nome_arquivo} baixado com sucesso!')
+
+            # Fechar o popup automaticamente após o download
+            if self.popup_download:
+                self.popup_download.dismiss()
         except Exception as e:
-            self.atualizar_status(f'Erro ao baixar o arquivo: {str(e)}')
+            self.atualizar_status(f'Erro ao baixar o item: {str(e)}')
 
-    def abrir_contato(self, instance):
-        url = 'https://t.me/BLACKSHEEP_B'  # Altere para o link desejado
-        webbrowser.open(url)
+    def mostrar_popup_telegram(self, instance):
+        content = BoxLayout(orientation='vertical', padding=10)
 
-    def atualizar_status(self, mensagem):
-        self.label_status.text = mensagem
-        logging.info(mensagem)
+        imagem = self.baixar_e_exibir_imagem('https://raw.githubusercontent.com/Checkstatusiptv/Checkm3u/refs/heads/main/redesocial.png')  # Substitua pela URL da sua imagem
+        content.add_widget(imagem)
+
+        close_btn = Button(text='Fechar', size_hint_y=None, height=50)
+        close_btn.bind(on_press=self.fechar_popup)
+        content.add_widget(close_btn)
+
+        self.popup = Popup(title='Telegram', content=content, size_hint=(0.7, 0.7))
+        self.popup.open()
 
 class GerenciadorTela(ScreenManager):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.add_widget(TelaChecker(name='checker'))
-        self.add_widget(TelaTerminal(name='terminal'))
+    pass
 
 class MeuApp(App):
     def build(self):
-        return GerenciadorTela()
+        self.tela_manager = GerenciadorTela()
+        self.tela_manager.add_widget(TelaChecker(name='tela_checker'))
+        self.tela_manager.add_widget(TelaTerminal(name='tela_terminal'))
+        return self.tela_manager
 
 if __name__ == '__main__':
     MeuApp().run()
