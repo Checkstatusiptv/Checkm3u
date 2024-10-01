@@ -43,21 +43,24 @@ class TelaTerminal(Screen):
 class TelaChecker(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.versao_local = "v1.2-F[BETA]"
+        self.versao_local = "v1.3"
         self.url_menu_json = 'https://raw.githubusercontent.com/Checkstatusiptv/Checkm3u/main/version.json'
         self.layout = BoxLayout(orientation='vertical', padding=10)
+
+        with self.layout.canvas.before:
+            Color(0, 0, 0, 1)
+            self.rect = RoundedRectangle(size=self.layout.size, pos=self.layout.pos, radius=[10])
+
+        self.bind(size=self._update_rect, pos=self._update_rect)
 
         self.label_funcionalidade = Label(text="", size_hint=(1, None), height=100)
         self.label_funcionalidade.bind(size=self.label_funcionalidade.setter('text_size'))
         self.layout.add_widget(self.label_funcionalidade)
 
+        # Versão do Python fixa
         python_version = "Python: 3.11.4 [GCC 11.4.0]"
         self.label_python_version = Label(text=python_version, size_hint=(1, None), height=30, color=(1, 1, 0, 1))
         self.layout.add_widget(self.label_python_version)
-
-        os_version = sys.platform
-        self.label_os_version = Label(text=f"Sistema Operacional: {os_version}", size_hint=(1, None), height=30, color=(0, 1, 1, 1))
-        self.layout.add_widget(self.label_os_version)
 
         self.criar_pasta_download()
         self.imagem = self.baixar_e_exibir_imagem('https://raw.githubusercontent.com/Checkstatusiptv/Checkm3u/main/scriptbyblacksheep.png')
@@ -72,7 +75,7 @@ class TelaChecker(Screen):
         self.barra_progresso = ProgressBar(max=100, size_hint=(1, None), height=50)
         self.layout.add_widget(self.barra_progresso)
 
-        self.label_status = Label(text='Pronto... O usuário pode baixar diferentes arquivos tais como (scripts, combos, add-ons)', size_hint=(1, None), height=1020, color=(1, 1, 1, 1))
+        self.label_status = Label(text='OBAA.. SAIU ATUALIZAÇÃO DO SCRIPT :D', size_hint=(1, None), height=1020, color=(1, 1, 1, 1))
         self.layout.add_widget(self.label_status)
 
         self.label_versao = Label(text=f"{self.versao_local}", size_hint=(1, None), height=30, color=(0, 1, 0, 1))
@@ -86,6 +89,10 @@ class TelaChecker(Screen):
         self.popup_download = None
         self.popup = None
         self.verificar_atualizacao()
+
+    def _update_rect(self, *args):
+        self.rect.pos = self.layout.pos
+        self.rect.size = self.layout.size
 
     def criar_pasta_download(self):
         self.pasta_download = os.path.join('/storage/emulated/0', 'TROPADOBLACKSHEEP') if platform == 'android' else os.path.join(os.path.expanduser("~"), "TROPADOBLACKSHEEP")
@@ -105,6 +112,9 @@ class TelaChecker(Screen):
             return Label(text="Imagem não disponível. Tente mais tarde.", color=(1, 1, 1, 1))
 
     def adicionar_botoes(self, layout):
+        retro_background_color = (0, 100/255, 0, 1)  # Verde escuro
+        text_color = (1, 1, 1, 1)
+
         botoes = [
             ('SCRIPTS', self.mostrar_popup_scripts),
             ('COMBOS', self.mostrar_popup_comb),
@@ -113,24 +123,8 @@ class TelaChecker(Screen):
         ]
 
         for texto, metodo in botoes:
-            button = Button(
-                text=texto,
-                size_hint=(0.95, 1),
-                on_press=metodo,
-                background_color=(0, 0.5, 0, 1),  # Azul escuro
-                color=(1, 1, 1, 1),  # Texto branco
-                font_size=18,
-                height=60,
-                background_normal='',  # Remove a imagem padrão
-            )
-
-            with button.canvas.before:
-                Color(0, 0, 0, 0.2)  # Cor da sombra
-                button.shadow_rect = RoundedRectangle(size=button.size, pos=(button.x + 3, button.y - 3), radius=[10])
-            
-            button.bind(size=lambda instance, value: setattr(instance.shadow_rect, 'size', value))
-            button.bind(pos=lambda instance, value: setattr(instance.shadow_rect, 'pos', (value[0] + 3, value[1] - 3)))
-            
+            button = Button(text=texto, size_hint=(0.95, 1), on_press=metodo,
+                            background_color=retro_background_color, color=text_color, font_size=18, height=60)
             layout.add_widget(button)
 
     def verificar_atualizacao(self):
@@ -145,7 +139,7 @@ class TelaChecker(Screen):
             if dados['version'] != self.versao_local:
                 Clock.schedule_once(lambda dt: self.mostrar_popup_nova_versao(dados['version'], dados['script_url']), 0)
             else:
-                Clock.schedule_once(lambda dt: self.atualizar_status('O script já está atualizado.'), 0)
+                Clock.schedule_once(lambda dt: self.atualizar_status('OBA.. O SCRIPT JÁ ESTÁ ATUALIZADO AGORA VOCÊ PODE BAIXAR SEUS ARQUIVOS.'), 0)
         except Exception as e:
             logging.error(f"Erro ao verificar atualização: {str(e)}")
 
